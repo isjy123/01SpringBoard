@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	
+	<!-- 어노테이션을 만들어진 설정을 XML에서 사용할 수 있게 해주는 어노테이션 -->
+	<annotation-driven />
+
+	<!-- 캐싱이 되는 자원의 위치를 설정하는 옵션 -->
+	<resources mapping="/resources/**" location="/resources/" />
+
+	<!-- Controller에서 forwarding 하는 뷰 이름이 왔을 때 사용할 옵션 -->
+	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/views/" />
+		<beans:property name="suffix" value=".jsp" />
+	</beans:bean>
+	
+	<!-- 인스턴스 자동으로 설정해주는 기본 패키지를 설정 -->
+	<context:component-scan base-package="naver.isjy123.springboard" />
+	
+	
+	<!-- Controller가 처리하지 못하는 요청은 WAS가 처리하도록 설정 -->
+	<default-servlet-handler/>
+	
+	<!-- 파일 업로드를 위한 빈 생성 코드 -->
+	<beans:bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver" id="multipartResolver">
+		<beans:property value="10485760" name="maxUploadSize" />
+	</beans:bean>
+	
+	<interceptors>
+		<interceptor>
+			<mapping path="/board/register"/>
+			<mapping path="/board/detail/*"/>
+			<mapping path="/board/update/*"/>
+			<mapping path="/board/delete/*"/>
+			
+			<beans:ref bean= "authInterceptor"/>
+		</interceptor>
+		<interceptor>
+			<mapping path="/user/login"/>
+			
+			<beans:ref bean="loginInterceptor"/>
+		</interceptor>
+	</interceptors>
+	
+	<!-- aop사용을 위한 설정 -->
+	<aop:aspectj-autoproxy/>
+</beans:beans>

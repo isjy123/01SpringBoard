@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- mapper태그안에 SQL을 작성 -->
+<mapper namespace="user">
+	<!-- email중복체크 -->
+	<select id="emailcheck" parameterType="java.lang.String" resultType="java.lang.String">
+		select email
+		from springuser
+		where email=#{email}
+	</select>
+	
+	<!-- nickname중복체크 -->
+	<select id="nicknamecheck" parameterType="java.lang.String" resultType="java.lang.String">
+		select nickname
+		from springuser
+		where nickname=#{nickname}
+	</select>
+	
+	<!-- 회원가입을 처리 해 줄 sql -->
+	<insert id="register" parameterType="User">
+		insert into springuser(email, pw, nickname, image)
+		values(#{email}, #{pw}, #{nickname}, #{image})
+	</insert>
+	
+	<!-- 로그인 처리를 하기 위해 email을 매개변수로 해서 모든 컬럼의 데이터를 찾아오는 SQL -->
+	<select id="login" parameterType="java.lang.String" resultType="User">
+		select email, pw, nickname, image
+		from springuser
+		where email = #{email}
+	</select>
+</mapper>

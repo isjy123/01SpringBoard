@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- mapper태그안에 SQL을 작성 -->
+<mapper namespace="board">
+
+	<!-- 게시글 작성을 위한 SQL -->
+	<insert id="register" parameterType="Board">
+		insert into springboard(bno, title, content, ip, email)
+		values(boardseq.nextval, #{title}, #{content}, #{ip}, #{email})
+	</insert>
+	
+	
+	<!-- 동적 SQL : 다른 SQL에 포함시켜서 사용 -->
+	<sql id="search">
+		<if test = "searchType != null">
+			<if test = "searchType == 'n'.toString()">
+				where b.email = u.email 
+			</if>
+			<!-- title 에 keyword가 포함된  -->
+			<if test = "searchType == 't'.toString()">
+				where b.email = u.email and 
+				title like '%' || #{keyword} || '%'
+			</if>
+			<!-- content 에 keyword가 포함된  -->
+			<if test = "searchType == 'c'.toString()">
+				where b.email = u.email and 
+				content like '%' || #{keyword} || '%'
+			</if>
+			<!-- nickname 에 keyword가 포함된  -->
+			<if test = "searchType == 'w'.toString()">
+				where b.email = u.email and 
+				nickname like '%' || #{keyword} || '%'
+			</if>
+			<!-- title 또는 content 에 keyword가 포함된  -->
+			<if test = "searchType == 'tc'.toString()">
+				where b.email = u.email and (
+				title like '%' || #{keyword} || '%' or
+				content like '%' || #{keyword} || '%')
+			</if>
+		</if>
+		<if test = "searchType == null">
+			where b.email = u.email
+		</if>
+	</sql>
+
+
+
+	<!-- 게시글 목록 - 페이지 처리 추가, 
+	updateDate별로 내림차순 정렬해서 Criteria 가 pageStart부터 pageSTart + perPageNum-1번째 데이터까지 가져오기 -->
+	<select id="list" resultType="Board" parameterType="SearchCriteria">
+		select bno, title, email, nickname, regdate, readcnt
+		from (select rownum, rnum, bno, title, email, nickname, regdate, readcnt 
+		from (select rownum, bno, title, b.email, nickname, regdate, readcnt 
+		from springbaord b, springuser u 
+		<include refid="search"></include> orderby updatedate desc))
+		where b.email = u.email 
+		where rnum &gt; = #{pageStart} and rnum &lt; = #{pageStart} + #{perPageNum} - 1
+	</select>
+	
+	<!-- 글번호를 가지고 하나의 데이터를 가져오는 sql -->
+	<select id="detail" resultType="Board"
+		parameterType="java.lang.Integer">
+		select bno, title, content, u.email, ip, nickname, regdate, updatedate,
+		readcnt from springuser u, springboard b
+		where u.email = b.email and bno = #{bno}
+	</select>
+	<!-- 글번호를 가지고 조회수를 1증가시키는 sql -->
+	<update id="updateReadcnt" parameterType="java.lang.Integer">
+		update springboard
+		set readcnt = readcnt + 1 where bno = #{bno}
+	</update>
+	<!-- 게시글을 수정하는 sql -->
+	<update id="update" parameterType="Board">
+		update springboard
+		set title=#{title}, content=#{content}, ip=#{ip}, updatedate=sysdate
+		where bno = #{bno}
+	</update>
+	
+	<!-- 글번호를 가지고 게시글을 삭제하는 sql --> 
+	<delete id="delete" parameterType="java.lang.Integer">
+		delete from springboard
+		where bno = #{bno} 
+	</delete>
+	
+	<!-- 글번호를 가지고 댓글 개수를 가져오는 SQL -->
+	<select id = "replycnt" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+		select count(*) 
+		from springreply 
+		where bno = #{bno}
+	</select>
+	
+	<!-- 전체 데이터 개수를 가져오는 SQL -->
+	<select id="totalCount"  resultType="java.lang.Integer">
+		select count(*)	
+		from springboard
+	</select>
+	
+</mapper>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- mapper태그안에 SQL을 작성 -->
+<mapper namespace = "reply">
+	<!-- 댓글 저장하는 SQL -->
+	<!-- replytext, bno, email, nickname   //  rno는 시퀀스 이용, regdate는 sysdate로 디폴트값 설정되어있음-->
+	<insert id = "register" parameterType="Reply">
+		insert into springreply(rno, replytext, bno, email, nickname) 
+		values (replyseq.nextval, #{replytext}, #{bno}, #{email}, #{nickname})
+	</insert>
+	
+	<!-- 글번호에 해당하는 댓글 가져오기 -->
+	<select id = "list" parameterType = "java.lang.Integer" resultType="Reply">
+		select *
+		from springreply
+		where bno = #{bno}
+		order by regdate desc
+	</select>
+	
+	<!-- 댓글 번호를 가지고 댓글을 삭제하는 SQL -->
+	<delete id="delete" parameterType="java.lang.Integer">
+		delete from springreply
+		where rno = #{rno}
+		
+	</delete>
+
+	<update id="update" parameterType="Reply">
+		update springreply 
+		set replytext=#{replytext}, regdate=sysdate 
+		where rno = #{rno} 
+	</update>
+
+</mapper>
