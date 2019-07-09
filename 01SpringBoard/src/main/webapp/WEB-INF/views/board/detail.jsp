@@ -122,6 +122,7 @@
 			resizable : false,
 			height : 'auto',
 			width : 400,
+		
 			modal : true,
 			buttons:{
 				"저장" : function(){
@@ -190,7 +191,7 @@
 		$("#replyform").dialog({
 			resizable : false,
 			height : "auto",
-			width : 400,
+			width : 4000,
 			modal : true,
 			buttons : {
 				"수정" : function() {

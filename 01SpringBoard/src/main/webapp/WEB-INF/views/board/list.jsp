@@ -10,6 +10,7 @@
 			<h3 class="box-title">${msg}</h3>
 		</c:if>
 	</div>
+</div>
 
 	<!-- 데이터 목록 개수를 설정하는 부분 -->
 	<div class="box-header with-border">
