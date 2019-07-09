@@ -50,13 +50,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<!-- 게시글 목록 - 페이지 처리 추가, 
 	updateDate별로 내림차순 정렬해서 Criteria 가 pageStart부터 pageSTart + perPageNum-1번째 데이터까지 가져오기 -->
 	<select id="list" resultType="Board" parameterType="SearchCriteria">
-		select bno, title, email, nickname, regdate, readcnt
-		from (select rownum, rnum, bno, title, email, nickname, regdate, readcnt 
+		select bno, title, email, nickname, regdate, readcnt 
+		from (select rownum rnum, bno, title, email, nickname, regdate, readcnt 
 		from (select rownum, bno, title, b.email, nickname, regdate, readcnt 
-		from springbaord b, springuser u 
-		<include refid="search"></include> orderby updatedate desc))
-		where b.email = u.email 
-		where rnum &gt; = #{pageStart} and rnum &lt; = #{pageStart} + #{perPageNum} - 1
+		from springboard b, springuser u 
+		<include refid="search"></include> order by updatedate desc)) 
+		where rnum &gt; = #{pageStart} and rnum &lt; = #{pageStart} + #{perPageNum} - 1 
 	</select>
 	
 	<!-- 글번호를 가지고 하나의 데이터를 가져오는 sql -->
